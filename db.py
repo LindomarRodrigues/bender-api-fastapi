@@ -16,6 +16,9 @@ class DisciplinaDb(Model):
     ref_id = IntegerField(primary_key=True)
     nome = IntegerField(primary_key=True)
 
+    class Meta:
+        database = db_obj
+
 
 class TurmaDb(Model):
     ref_id = IntegerField(primary_key=True)
@@ -27,3 +30,6 @@ class TurmaDb(Model):
     bloco = CharField()
     tipo = CharField()  # Hibrido/Remoto/Presencial
     professor_ref_id = IntegerField()
+
+    class Meta:
+        database = db_obj
