@@ -14,11 +14,12 @@ class Disciplina(BaseModel):
 
 class Turma(BaseModel):
     ref_id: int
-    disciplina_ref_id: int
+    disciplina_nome: str
     semestre: str
     ano: str
     turma: str
     sala: str
     bloco: str
     tipo: str
-    professor_ref_id: int
+    professor_nome: str
+    professor_email: str
