@@ -14,7 +14,7 @@ class ProfessorDb(Model):
 
 class DisciplinaDb(Model):
     ref_id = IntegerField(primary_key=True)
-    nome = IntegerField(primary_key=True)
+    nome = CharField()
 
     class Meta:
         database = db_obj
@@ -33,3 +33,6 @@ class TurmaDb(Model):
 
     class Meta:
         database = db_obj
+
+
+db_obj.create_tables([DisciplinaDb, TurmaDb])
