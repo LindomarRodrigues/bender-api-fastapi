@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from db import DisciplinaDb
 from db import ProfessorDb
 from db import TurmaDb
-from modelos import Professor, Horario
+from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
 
 app = FastAPI()
@@ -54,8 +54,8 @@ def buscarTurma(ref_id: int):
     return turma
 
 
-@app.get('/listar_emails_professor', response_model=List[Professor])
-def listarEmailsProfessor():
+@app.get('/listar_emails_professores', response_model=List[Professor])
+def listarEmailsProfessores():
     professores_db = ProfessorDb().select()
 
     professores = [Professor(ref_id=professor_db.ref_id,
@@ -82,3 +82,15 @@ def listarHorariosPorPeriodo():
                                                        professor_nome=professor_db.nome))
 
     return horarios
+
+
+@app.get('/listar_grupos_telegram_por_periodo', response_model=Dict[str, List[GrupoTelegram]])
+def listarGruposTelegramPorPeriodo():
+    disciplinas_db = DisciplinaDb().select()
+
+    grupos = {periodo: [] for periodo in range(1, 9)}
+    for disciplina_db in disciplinas_db:
+        grupos[disciplina_db.periodo].append(GrupoTelegram(nome=disciplina_db.nome,
+                                                           link=disciplina_db.grupo_telegram_link))
+
+    return grupos

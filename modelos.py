@@ -33,3 +33,8 @@ class Horario(BaseModel):
     horario: str
     periodo: str
     professor_nome: str
+
+
+class GrupoTelegram(BaseModel):
+    nome: str
+    link: str
