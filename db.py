@@ -16,6 +16,7 @@ class DisciplinaDb(Model):
     ref_id = IntegerField(primary_key=True)
     nome = CharField()
     periodo = IntegerField()
+    grupo_telegram_link = CharField()
 
     class Meta:
         database = db_obj
