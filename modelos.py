@@ -23,3 +23,13 @@ class Turma(BaseModel):
     tipo: str
     professor_nome: str
     professor_email: str
+
+
+class Horario(BaseModel):
+    disciplina_nome: str
+    turma: str
+    sala: str
+    bloco: str
+    horario: str
+    periodo: str
+    professor_nome: str
