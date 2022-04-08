@@ -2,3 +2,4 @@ fastapi[all]
 peewee
 pydantic
 python-dotenv
+psycopg2-binary
