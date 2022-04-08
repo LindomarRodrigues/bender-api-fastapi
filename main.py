@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from autenticacao import autenticacao
+from mensageria import mensageria
 from config import Settings
 from db import DisciplinaDb
 from db import ProfessorDb
@@ -13,6 +14,7 @@ from modelos import Turma
 
 settings = Settings()
 app = FastAPI()
+
 print(settings)
 app.add_middleware(CORSMiddleware,
                    allow_origins='*',
@@ -21,7 +23,7 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 app.include_router(autenticacao.router)
-
+app.include_router(mensageria.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):
