@@ -3,6 +3,7 @@ from typing import List, Dict
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from autenticacao import autenticacao
 from config import Settings
 from db import DisciplinaDb
 from db import ProfessorDb
@@ -18,6 +19,8 @@ app.add_middleware(CORSMiddleware,
                    allow_credentials=True,
                    allow_methods=["*"],
                    allow_headers=["*"])
+
+app.include_router(autenticacao.router)
 
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
