@@ -3,14 +3,15 @@ from typing import List, Dict
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from config import Settings
 from db import DisciplinaDb
 from db import ProfessorDb
 from db import TurmaDb
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
-
+settings = Settings()
 app = FastAPI()
-
+print(settings)
 app.add_middleware(CORSMiddleware,
                    allow_origins='*',
                    allow_credentials=True,
