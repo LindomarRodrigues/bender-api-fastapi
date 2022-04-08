@@ -9,6 +9,7 @@ from db import ProfessorDb
 from db import TurmaDb
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
+
 settings = Settings()
 app = FastAPI()
 print(settings)
