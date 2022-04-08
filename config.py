@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     db_senha: str
     db_host: str
     db_porta: int
+    tempo_expiracao_jwt: int = 60 * 60 * 24 * 30
+    jwt_secret: str = 'tdlecefccletsmpm'
 
     class Config:
         env_file = ".env"
