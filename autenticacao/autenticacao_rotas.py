@@ -46,6 +46,7 @@ def cadastrar(nome: str, email: str, senha: str):
 
 @router.post('/entrar')
 def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
+    # import ipdb;ipdb.set_trace()
     email = form_data.username
     senha = form_data.password
     usuario = Usuario().select().where(Usuario.email == email)
@@ -74,7 +75,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
 
     usuario.ultimo_acesso_em = datetime.datetime.now()
     usuario.save()
-    return {"access_token": enc_jwt, "token_type": "bearer"}
+    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True}
 
 
 @router.post('/atualizar_jwt', response_model=AtualizarJwtModelo)
