@@ -38,3 +38,7 @@ class Horario(BaseModel):
 class GrupoTelegram(BaseModel):
     nome: str
     link: str
+
+class Curso(BaseModel):
+    ref_id: int
+    nome: str

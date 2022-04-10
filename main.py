@@ -6,11 +6,11 @@ from starlette.middleware.cors import CORSMiddleware
 from autenticacao import autenticacao_rotas
 from autenticacao.autenticacao import usuario_jwt
 from config import Settings
-from db import DisciplinaDb
+from db import DisciplinaDb, CursoDb
 from db import ProfessorDb
 from db import TurmaDb
 from mensageria import mensageria
-from modelos import Professor, Horario, GrupoTelegram
+from modelos import Professor, Horario, GrupoTelegram, Curso
 from modelos import Turma
 
 settings = Settings()
@@ -108,3 +108,15 @@ def listarGruposTelegramPorPeriodo():
                                                            link=disciplina_db.grupo_telegram_link))
 
     return grupos
+
+@app.get('/buscar_curso/{ref_id}', response_model=Curso)
+def buscarCurso(ref_id: int):
+    """
+    Retorna o refId e nome do Curso
+    """
+
+    curso_db = CursoDb().select().where(CursoDb.ref_id == ref_id).first()
+
+    curso = Curso(ref_id=curso_db.ref_id,
+                  nome=curso_db.nome)
+    return curso
