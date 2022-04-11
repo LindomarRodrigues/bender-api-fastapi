@@ -9,8 +9,8 @@ class Usuario(Model):
     instituicao = IntegerField(null=True)
     campus = IntegerField(null=True)
     curso = IntegerField(null=True)
-    foto = CharField(max_length=2048)
-    cor = CharField()
+    foto = CharField(max_length=2048,null=True)
+    cor = CharField(null=True)
 
     class Meta:
         database = db_obj
