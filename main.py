@@ -3,12 +3,17 @@ from typing import List, Dict
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from autenticacao import autenticacao_rotas
+from usuario import usuario_rotas
+from config import Settings
 from db import DisciplinaDb
 from db import ProfessorDb
 from db import TurmaDb
+from mensageria import mensageria
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
 
+settings = Settings()
 app = FastAPI()
 
 app.add_middleware(CORSMiddleware,
@@ -17,6 +22,10 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
+app.include_router(autenticacao_rotas.router)
+
+app.include_router(mensageria.router)
+app.include_router(usuario_rotas.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):
