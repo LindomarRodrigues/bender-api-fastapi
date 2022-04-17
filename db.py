@@ -53,3 +53,20 @@ class TurmaDb(Model):
 
 # db_obj.drop_tables([TurmaDb, DisciplinaDb, ProfessorDb])
 # db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb])
+
+class InstituicaoDb(Model):
+    ref_id = AutoField()
+    nome = CharField()
+
+    class Meta:
+        database = db_obj
+        schema = 'dados_estaticos'
+
+class CampusDb(Model):
+    ref_id = AutoField()
+    cidade_campus = CharField()
+    instituicao_ref_id = ForeignKeyField(InstituicaoDb, backref='campus', null=True)
+
+    class Meta:
+        database = db_obj
+        schema = 'dados_estaticos'

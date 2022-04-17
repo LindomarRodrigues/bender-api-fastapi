@@ -6,11 +6,11 @@ from starlette.middleware.cors import CORSMiddleware
 from autenticacao import autenticacao_rotas
 from usuario import usuario_rotas
 from config import Settings
-from db import DisciplinaDb
+from db import DisciplinaDb, InstituicaoDb, CampusDb
 from db import ProfessorDb
 from db import TurmaDb
 from mensageria import mensageria
-from modelos import Professor, Horario, GrupoTelegram
+from modelos import Professor, Horario, GrupoTelegram, Instituicao, Campus
 from modelos import Turma
 
 settings = Settings()
@@ -103,3 +103,25 @@ def listarGruposTelegramPorPeriodo():
                                                            link=disciplina_db.grupo_telegram_link))
 
     return grupos
+
+@app.get('/buscar_intituicao/{ref_id}', response_model=Instituicao)
+def buscarInstituiucao(ref_id: int):
+
+
+    instituicao_db = InstituicaoDb().select().where(InstituicaoDb.ref_id == ref_id).first()
+
+    instituicao = Instituicao(ref_id=instituicao_db.ref_id,
+                              nome=instituicao_db.nome)
+    return instituicao
+
+@app.get('/buscar_campus/{ref_id}', response_model=Campus)
+def buscarCampus(ref_id: int):
+    campus_db = CampusDb().select().where(CampusDb.ref_id == ref_id).first()
+
+    instituicao_db = InstituicaoDb().select().where(InstituicaoDb.ref_id == campus_db.instituicao_ref_id).first()
+
+    campus = Campus(ref_id=campus_db.ref_id,
+                    cidade_campus=campus_db.cidade_campus,
+                    instituicao_nome=instituicao_db.nome)
+
+    return Campus
