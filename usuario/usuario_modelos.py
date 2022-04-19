@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class UsuarioModelo(BaseModel):
     nome: str
+    email: str
     instituicao: Optional[str]
     campus: Optional[str]
     curso: Optional[str]

@@ -9,8 +9,8 @@ class ReconnectPostgresqlDatabase(ReconnectMixin, PostgresqlDatabase):
 
 
 settings = Settings()
-db_obj = ReconnectPostgresqlDatabase(settings.db_nome, user=settings.db_usuario, password=settings.db_senha,
-                                     host=settings.db_host, port=settings.db_porta)
+db_obj = PostgresqlDatabase(settings.db_nome, user=settings.db_usuario, password=settings.db_senha,
+                            host=settings.db_host, port=settings.db_porta)
 
 
 class ProfessorDb(Model):
@@ -49,7 +49,6 @@ class TurmaDb(Model):
     class Meta:
         database = db_obj
         schema = 'dados_estaticos'
-
 
 # db_obj.drop_tables([TurmaDb, DisciplinaDb, ProfessorDb])
 # db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb])
