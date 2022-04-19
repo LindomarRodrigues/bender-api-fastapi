@@ -1,6 +1,6 @@
 from peewee import Model, CharField, AutoField, ForeignKeyField, IntegerField, DateTimeField
 
-from autenticacao.autenticacao_db import Usuario
+from usuario.usuario_db import Usuario
 from db import db_obj
 
 

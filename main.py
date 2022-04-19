@@ -1,10 +1,11 @@
 from typing import List, Dict
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 
 from autenticacao import autenticacao_rotas
-from autenticacao.autenticacao import usuario_jwt
+from usuario import usuario_rotas
 from config import Settings
 from db import DisciplinaDb, CursoDb
 from db import ProfessorDb
@@ -15,6 +16,7 @@ from modelos import Turma
 
 settings = Settings()
 app = FastAPI()
+app.add_middleware(GZipMiddleware, minimum_size=100)
 
 app.add_middleware(CORSMiddleware,
                    allow_origins='*',
@@ -23,14 +25,9 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 app.include_router(autenticacao_rotas.router)
+
 app.include_router(mensageria.router)
-
-
-@app.get('/teste')
-def teste(current_user: str = Depends(usuario_jwt)):
-    print(current_user)
-    return {'teste': 'jwt'}
-
+app.include_router(usuario_rotas.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):

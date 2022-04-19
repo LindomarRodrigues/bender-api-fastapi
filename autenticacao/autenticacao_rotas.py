@@ -5,7 +5,7 @@ from fastapi import APIRouter, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from playhouse.shortcuts import model_to_dict
 
-from autenticacao.autenticacao_db import Usuario, JwtRefreshToken
+from autenticacao.autenticacao_db import UsuarioAuth, JwtRefreshToken
 from autenticacao.autenticacao_modelos import CadastroModelo, EntrarModelo, AtualizarJwtModelo
 from config import Settings
 from utilitarios.geral import gerar_hash_sha256, verificar_email
@@ -24,21 +24,21 @@ def cadastrar(nome: str, email: str, senha: str):
     elif verificar_email(email) is False:
         return CadastroModelo(status=False, erro='Email inválido')
     else:
-        usuario = Usuario().select().where(Usuario.email == email)
+        usuario = UsuarioAuth().select().where(UsuarioAuth.email == email)
         if usuario.exists():
             return CadastroModelo(status=False, erro='Email já cadastrado')
 
-        usuario = Usuario().select().where(Usuario.nome == nome)
+        usuario = UsuarioAuth().select().where(UsuarioAuth.nome == nome)
         if usuario.exists():
             return CadastroModelo(status=False, erro='Nome já cadastrado')
 
     senha_hash = gerar_hash_sha256(senha)
 
-    usuario = Usuario(nome=nome,
-                      email=email,
-                      registrado_em=datetime.datetime.now(),
-                      ultimo_acesso_em=datetime.datetime.now(),
-                      senha_hash=senha_hash)
+    usuario = UsuarioAuth(nome=nome,
+                          email=email,
+                          registrado_em=datetime.datetime.now(),
+                          ultimo_acesso_em=datetime.datetime.now(),
+                          senha_hash=senha_hash)
     usuario.save()
 
     return CadastroModelo(status=True)
@@ -49,7 +49,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
     # import ipdb;ipdb.set_trace()
     email = form_data.username
     senha = form_data.password
-    usuario = Usuario().select().where(Usuario.email == email)
+    usuario = UsuarioAuth().select().where(UsuarioAuth.email == email)
     if not usuario.exists():
         return EntrarModelo(status=False, erro='Email não cadastrado')
     usuario = usuario.first()
@@ -75,6 +75,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
 
     usuario.ultimo_acesso_em = datetime.datetime.now()
     usuario.save()
+    print(enc_jwt)
     return {"access_token": enc_jwt, "token_type": "bearer", 'status': True}
 
 
@@ -88,7 +89,7 @@ def atualizar_jwt(enc_jwt: str):
     jwt_refresh_token.save()
     id_ultimo_token = usuario_payload['jwt_refresh_id']
 
-    usuario = Usuario().select().where(Usuario.id == usuario_payload['id']).first()
+    usuario = UsuarioAuth().select().where(UsuarioAuth.id == usuario_payload['id']).first()
 
     usuario_payload = model_to_dict(usuario)
     usuario_payload['exp'] = datetime.datetime.now() + datetime.timedelta(seconds=settings.tempo_expiracao_jwt)
