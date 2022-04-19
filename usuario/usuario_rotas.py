@@ -15,6 +15,7 @@ settings = Settings()
 @router.get('/usuario', response_model=UsuarioModelo)
 def usuario(current_user: Usuario = Depends(usuario_jwt)):
     usuario_modelo = UsuarioModelo(nome=current_user.id.nome,
+                                   email=current_user.id.email,
                                    instituicao=current_user.instituicao,
                                    campus=current_user.campus,
                                    curso=current_user.curso,

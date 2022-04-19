@@ -2,6 +2,7 @@ from typing import List, Dict
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 
 from autenticacao import autenticacao_rotas
 from usuario import usuario_rotas
@@ -15,6 +16,7 @@ from modelos import Turma
 
 settings = Settings()
 app = FastAPI()
+app.add_middleware(GZipMiddleware, minimum_size=100)
 
 app.add_middleware(CORSMiddleware,
                    allow_origins='*',
