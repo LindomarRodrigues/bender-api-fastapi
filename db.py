@@ -52,3 +52,11 @@ class TurmaDb(Model):
 
 # db_obj.drop_tables([TurmaDb, DisciplinaDb, ProfessorDb])
 # db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb])
+
+class CursoDb(Model):
+    ref_id = AutoField()
+    nome = CharField()
+
+    class Meta:
+        database = db_obj
+        schema = 'dados_estaticos'
