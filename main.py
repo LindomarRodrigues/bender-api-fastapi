@@ -5,13 +5,21 @@ from starlette.middleware.cors import CORSMiddleware
 
 from autenticacao import autenticacao_rotas
 from usuario import usuario_rotas
+from uploadfile import file_rotas
+from emailsprofessores import professor_rotas
 from config import Settings
 from db import DisciplinaDb
+from db import db_obj
 from db import ProfessorDb
 from db import TurmaDb
+from emailsprofessores.professor_db import ContatoProfessorDB
+from uploadfile.file_db import File
 from mensageria import mensageria
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
+
+db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, File, ContatoProfessorDB])
+
 
 settings = Settings()
 app = FastAPI()
@@ -26,6 +34,8 @@ app.include_router(autenticacao_rotas.router)
 
 app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
+app.include_router(file_rotas.router)
+app.include_router(professor_rotas.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):
