@@ -5,9 +5,11 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from autenticacao import autenticacao_rotas
+from instituicao import instituicao_rotas
+from instituicao.instituicao_db import InstituicaoDB
 from usuario import usuario_rotas
 from config import Settings
-from db import DisciplinaDb
+from db import DisciplinaDb, db_obj
 from db import ProfessorDb
 from db import TurmaDb
 from mensageria import mensageria
@@ -24,6 +26,10 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
+
+db_obj.create_tables([InstituicaoDB])
+
+app.include_router(instituicao_rotas.router)
 app.include_router(autenticacao_rotas.router)
 
 app.include_router(mensageria.router)
