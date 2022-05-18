@@ -7,17 +7,19 @@ from starlette.middleware.gzip import GZipMiddleware
 from autenticacao import autenticacao_rotas
 from usuario import usuario_rotas
 from emailsprofessores import professor_rotas
+from lattesDocente import lattesDocente_rotas
 from config import Settings
 from db import DisciplinaDb
 from db import db_obj
 from db import ProfessorDb
 from db import TurmaDb
 from emailsprofessores.professor_db import ContatoProfessorDB
+from lattesDocente.lattesDocente_db import lattesDocenteDB
 from mensageria import mensageria
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
 
-db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB])
+db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, lattesDocenteDB])
 
 
 settings = Settings()
@@ -35,6 +37,7 @@ app.include_router(autenticacao_rotas.router)
 app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
+app.include_router(lattesDocente_rotas.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):
