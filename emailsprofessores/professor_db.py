@@ -10,3 +10,5 @@ class ContatoProfessorDB(Model):
     class Meta:
         database = db_obj
         schema = 'professoresContatos'
+
+db_obj.create_tables([ContatoProfessorDB])
