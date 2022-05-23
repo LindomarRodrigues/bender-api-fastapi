@@ -5,6 +5,10 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from autenticacao import autenticacao_rotas
+from campus import campus_rotas
+from campus.campus_db import CampusDB
+from curso import curso_rotas
+from curso.curso_db import CursoDB
 from instituicao import instituicao_rotas
 from instituicao.instituicao_db import InstituicaoDB
 from usuario import usuario_rotas
@@ -27,10 +31,12 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 
-db_obj.create_tables([InstituicaoDB])
+db_obj.create_tables([InstituicaoDB, CampusDB,CursoDB])
 
-app.include_router(instituicao_rotas.router)
 app.include_router(autenticacao_rotas.router)
+app.include_router(instituicao_rotas.router)
+app.include_router(campus_rotas.router)
+app.include_router(curso_rotas.router)
 
 app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
