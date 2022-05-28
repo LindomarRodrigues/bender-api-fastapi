@@ -1,8 +1,8 @@
 from typing import List
 
 import jwt
-from fastapi import APIRouter
-
+from fastapi import APIRouter,Depends
+from usuario.usuario_db import Usuario
 from autenticacao.autenticacao import usuario_jwt
 from config import Settings
 from instagram.instagram_db import Instagram
@@ -14,7 +14,7 @@ settings = Settings()
 
 
 @router.post('/adicionar_instagram', response_model = List[AtualizarInstagram])
-def adicionar_instagram(response: List[InstagramModeloPost]):
+def adicionar_instagram(  response: List[InstagramModeloPost], current_user: Usuario = Depends(usuario_jwt)):
     list_status = []
     for instagram in response:
         instagram_db = Instagram().select().where((Instagram.link == instagram.link))
