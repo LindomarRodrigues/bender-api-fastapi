@@ -25,3 +25,12 @@ class TurmasUsuario(Model):
     class Meta:
         database = db_obj
         schema = 'usuario'
+
+class TipoUsuarioDB(Model):
+    id= AutoField()
+    usuario_id = ForeignKeyField(UsuarioAuth, backref='tipo')
+    tipo = IntegerField() #0 = Anonimo, 1 = Usuario comum, 2 = Adminstrador
+
+    class Meta:
+        database= db_obj
+        schema = 'usuario'
