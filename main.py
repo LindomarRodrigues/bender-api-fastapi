@@ -13,13 +13,15 @@ from db import DisciplinaDb
 from db import db_obj
 from db import ProfessorDb
 from db import TurmaDb
+from usuario.usuario_db import TipoUsuarioDB, TurmasUsuario, Usuario
+from autenticacao.autenticacao_db import UsuarioAuth, JwtRefreshToken
 from emailsprofessores.professor_db import ContatoProfessorDB
 from contatosCoordernacao.contatosCordenacao_db import ContatosCoordenacaoDB
 from mensageria import mensageria
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
 
-db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB])
+db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuario, Usuario,UsuarioAuth, JwtRefreshToken])
 
 
 settings = Settings()
