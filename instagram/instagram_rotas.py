@@ -14,7 +14,7 @@ settings = Settings()
 
 
 @router.post('/adicionar_instagram', response_model = List[AtualizarInstagram])
-def adicionar_instagram(  response: List[InstagramModeloPost], current_user: Usuario = Depends(usuario_jwt)):
+def adicionar_instagram( response: List[InstagramModeloPost]):
     list_status = []
     for instagram in response:
         instagram_db = Instagram().select().where((Instagram.link == instagram.link))
@@ -22,7 +22,7 @@ def adicionar_instagram(  response: List[InstagramModeloPost], current_user: Usu
             list_status.append(AtualizarInstagram(erro = "Esta conta já foi adicionada", status=False))
             continue 
         id_instagram = Instagram.insert(nome_do_perfil = instagram.nome_do_perfil, link = instagram.link).execute()
-        list_status.append(AtualizarInstagram(status=True))
+        list_status.append(AtualizarInstagram(id=id_instagram, status=True))
     return list_status
 
 @router.get('/listar_instagrams', response_model=List[InstagramModeloGet])
