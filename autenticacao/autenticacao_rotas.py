@@ -8,6 +8,7 @@ from playhouse.shortcuts import model_to_dict
 from autenticacao.autenticacao_db import UsuarioAuth, JwtRefreshToken
 from autenticacao.autenticacao_modelos import CadastroModelo, EntrarModelo, AtualizarJwtModelo
 from config import Settings
+from usuario.usuario_db import Usuario, TipoUsuarioDB
 from utilitarios.geral import gerar_hash_sha256, verificar_email
 
 router = APIRouter(prefix="/autenticacao",
@@ -16,7 +17,7 @@ settings = Settings()
 
 
 @router.post('/cadastrar', status_code=status.HTTP_201_CREATED, response_model=CadastroModelo)
-def cadastrar(nome: str, email: str, senha: str):
+def cadastrar(nome: str, email: str, senha: str, tipo_usuario: int = 1):
     if len(nome) == 0:
         return CadastroModelo(status=False, erro='Nome inválido')
     elif len(senha) < 8:
@@ -34,12 +35,15 @@ def cadastrar(nome: str, email: str, senha: str):
 
     senha_hash = gerar_hash_sha256(senha)
 
-    usuario = UsuarioAuth(nome=nome,
-                          email=email,
-                          registrado_em=datetime.datetime.now(),
-                          ultimo_acesso_em=datetime.datetime.now(),
-                          senha_hash=senha_hash)
-    usuario.save()
+    usuario_auth = UsuarioAuth(nome=nome,
+                               email=email,
+                               registrado_em=datetime.datetime.now(),
+                               ultimo_acesso_em=datetime.datetime.now(),
+                               senha_hash=senha_hash)
+    usuario_auth.save()
+    Usuario.insert(id=usuario_auth.id, cor='#fff').execute()
+
+    TipoUsuarioDB.insert(usuario_id=usuario_auth.id, tipo=tipo_usuario).execute()
 
     return CadastroModelo(status=True)
 
