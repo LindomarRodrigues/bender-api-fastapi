@@ -1,10 +1,11 @@
-from asyncio.windows_events import NULL
 from pydantic import BaseModel
 from typing import Optional
 
 class AtleticaCursoPostModelo(BaseModel):
-    erro: Optional [str] = NULL
+    id: Optional[int]
+    error: Optional[str]
     status: bool
+    
 
 class AtleticaGetCursoModelo(BaseModel):
     id: int
@@ -13,9 +14,3 @@ class AtleticaGetCursoModelo(BaseModel):
     email: str
     instagram: str
     telefone: str
-
-# class AtleticaPostCursoModelo(BaseModel):
-#     nome: str
-#     email: str
-#     instagram: str
-#     telefone: str
