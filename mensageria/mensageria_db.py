@@ -1,36 +1,39 @@
 from peewee import Model, CharField, AutoField, ForeignKeyField, IntegerField, DateTimeField
 
-from usuario.usuario_db import Usuario
 from db import db_obj
+from usuario.usuario_db import UsuarioDb
 
 
-class Conversa(Model):
+class ConversaDb(Model):
     id = AutoField()
-    autor_id = ForeignKeyField(Usuario, backref='conversas_iniciadas')
-    receptor_id = ForeignKeyField(Usuario, backref='conversas_convidadas')
+    autor_id = ForeignKeyField(UsuarioDb, backref='conversas_iniciadas')
+    receptor_id = ForeignKeyField(UsuarioDb, backref='conversas_convidadas')
 
     class Meta:
         database = db_obj
         schema = 'mensageria'
+        db_table = 'conversa'
 
 
-class Mensagem(Model):
+class MensagemDb(Model):
     id = AutoField()
     conteudo = CharField(max_length=1024)
-    conversa_id = ForeignKeyField(Conversa, backref='mensagens')
+    conversa_id = ForeignKeyField(ConversaDb, backref='mensagens')
     responsavel = IntegerField()  # 1 --> autor | 2 --> receptor
 
     class Meta:
         database = db_obj
         schema = 'mensageria'
+        db_table = 'mensagem'
 
 
-class MensagemStatus(Model):
+class MensagemStatusDb(Model):
     id = AutoField()
-    mensagem_id = ForeignKeyField(Mensagem, backref='status')
+    mensagem_id = ForeignKeyField(MensagemDb, backref='status')
     status = IntegerField()  # 0 --> Enviado, 1 --> Recebido, 2 --> Lido
     aconteceu_em = DateTimeField()
 
     class Meta:
         database = db_obj
         schema = 'mensageria'
+        db_table = 'mensagemstatus'
