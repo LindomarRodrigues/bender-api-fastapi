@@ -23,7 +23,7 @@ def coordenacao():
         contatos_modelo.append(ContatosGetCoordenacaoModelo(id= contato.id, email= contato.email, telefone= contato.telefone))
     return contatos_modelo
 
-@router.post('contatosCoordenacao/', response_model=ContatosPostCoordenacaoModelo)
+@router.post('/contatosCoordenacao', response_model=ContatosPostCoordenacaoModelo)
 def coordenacao(enc_jwt: str, response: dict = Body(...)):
     usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
     
