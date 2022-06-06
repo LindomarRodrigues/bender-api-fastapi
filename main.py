@@ -8,17 +8,21 @@ from autenticacao import autenticacao_rotas
 from instagram import instagram_rotas
 from usuario import usuario_rotas
 from emailsprofessores import professor_rotas
+from contatosCoordernacao import contatosCordenacao_rotas
 from config import Settings
 from db import DisciplinaDb
 from db import db_obj
 from db import ProfessorDb
 from db import TurmaDb
+from usuario.usuario_db import TipoUsuarioDB, TurmasUsuario, Usuario
+from autenticacao.autenticacao_db import UsuarioAuth, JwtRefreshToken
 from emailsprofessores.professor_db import ContatoProfessorDB
+from contatosCoordernacao.contatosCordenacao_db import ContatosCoordenacaoDB
 from mensageria import mensageria
 from modelos import Professor, Horario, GrupoTelegram
 from modelos import Turma
 
-db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB])
+db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuario, Usuario,UsuarioAuth, JwtRefreshToken])
 
 
 settings = Settings()
@@ -37,6 +41,7 @@ app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
 app.include_router(instagram_rotas.router)
+app.include_router(contatosCordenacao_rotas.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):
