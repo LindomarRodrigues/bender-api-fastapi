@@ -10,6 +10,3 @@ class InstagramModeloGet(BaseModel):
     id: int
     nome_do_perfil: str
     link: str
-class InstagramModeloPost(BaseModel):
-    nome_do_perfil: str
-    link: str

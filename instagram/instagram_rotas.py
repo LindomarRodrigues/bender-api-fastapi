@@ -12,7 +12,7 @@ router = APIRouter(prefix="/instagram",
 settings = Settings()
 
 
-@router.post('/adicionar_instagram')
+@router.post('/adicionar_instagram', response_model = AtualizarInstagram)
 def adicionar_instagram( enc_jwt: str, nome_do_perfil: str, link: str):
     usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
     usuario = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
