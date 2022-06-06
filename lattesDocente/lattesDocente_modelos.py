@@ -7,6 +7,7 @@ class LattesPostDocenteModelo(BaseModel):
     error: Optional[str]
 
 class LattesGetDocenteModelo(BaseModel):
-    id: int
-    nome: str
-    lattes: str
+    id: Optional[int]
+    nome: Optional[str]
+    lattes: Optional[str]
+    error: Optional[str]

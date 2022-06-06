@@ -23,7 +23,7 @@ def latte(enc_jwt: str):
     tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
     
     if tipo_usuario_db.tipo < 2:
-        return LattesPostDocenteModelo(status= False, error="Usuario não autenticado")
+        return[ LattesPostDocenteModelo(status= False, error="Usuario não autenticado")]
 
     lattes = lattesDocenteDB().select()
     lattes_modelo = []
