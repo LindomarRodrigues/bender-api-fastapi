@@ -9,5 +9,3 @@ class Instagram(Model):
     class Meta:
         database = db_obj
         schema = 'instagram'
-
-db_obj.create_tables([Instagram]) 

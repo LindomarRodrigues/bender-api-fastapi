@@ -5,9 +5,9 @@ from typing import List
 from config import Settings
 from fastapi import APIRouter, Body
 
-from emailsprofessores.professor_db import ContatoProfessorDB
-from emailsprofessores.professor_modelos import ContatoPostProfessorModelo
-from emailsprofessores.professor_modelos import ContatoGetProfessorModelo
+from emails_professores.professor_db import ContatoProfessorDB
+from emails_professores.professor_modelos import ContatoPostProfessorModelo
+from emails_professores.professor_modelos import ContatoGetProfessorModelo
 
 router = APIRouter(prefix="/professores",   
                    tags=["Professores"]) 

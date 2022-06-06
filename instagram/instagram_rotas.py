@@ -4,7 +4,7 @@ import jwt
 from fastapi import APIRouter
 from config import Settings
 from instagram.instagram_db import Instagram
-from instagram.instagram_modelos import AtualizarInstagram, InstagramModeloPost,InstagramModeloGet
+from instagram.instagram_modelos import AtualizarInstagram, InstagramModeloGet
 from usuario.usuario_db import TipoUsuarioDB
 
 router = APIRouter(prefix="/instagram",

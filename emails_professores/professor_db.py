@@ -1,6 +1,7 @@
-from peewee import Model, IntegerField, AutoField, CharField
+from peewee import Model, AutoField, CharField
 
 from db import db_obj
+
 
 class ContatoProfessorDB(Model):
     id = AutoField()
@@ -10,5 +11,3 @@ class ContatoProfessorDB(Model):
     class Meta:
         database = db_obj
         schema = 'professoresContatos'
-
-db_obj.create_tables([ContatoProfessorDB])
