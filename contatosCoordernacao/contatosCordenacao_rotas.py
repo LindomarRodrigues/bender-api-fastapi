@@ -6,6 +6,11 @@ import jwt
 from config import Settings
 from fastapi import APIRouter, Body
 
+import jwt
+from autenticacao.autenticacao import usuario_jwt
+from fastapi import APIRouter, Depends
+from usuario.usuario_db import Usuario
+
 from contatosCoordernacao.contatosCordenacao_db import ContatosCoordenacaoDB
 from contatosCoordernacao.contatosCordenacao_modelos import ContatosPostCoordenacaoModelo
 from contatosCoordernacao.contatosCordenacao_modelos import ContatosGetCoordenacaoModelo
@@ -16,15 +21,15 @@ router = APIRouter(prefix="/contatosCoordenacao",
 settings = Settings()
 
 @router.get('/contatosCoordenacao', response_model=List[ContatosGetCoordenacaoModelo])
-def coordenacao():
-    contatos = ContatosCoordenacaoDB().select()
+def coordenacao(current_user: Usuario = Depends(usuario_jwt)):
+    contatos = ContatosCoordenacaoDB().select().where(ContatosCoordenacaoDB.curso_id == current_user.curso)
     contatos_modelo = []
     for contato in contatos:
-        contatos_modelo.append(ContatosGetCoordenacaoModelo(id= contato.id, email= contato.email, telefone= contato.telefone))
+        contatos_modelo.append(ContatosGetCoordenacaoModelo(id= contato.id, curso_id=contato.curso_id, email= contato.email, telefone= contato.telefone))
     return contatos_modelo
 
 @router.post('contatosCoordenacao/', response_model=ContatosPostCoordenacaoModelo)
-def coordenacao(enc_jwt: str, response: dict = Body(...)):
+def coordenacao(enc_jwt: str, response: dict = Body(...), current_user: Usuario = Depends(usuario_jwt)):
     usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
     
     tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
@@ -35,5 +40,5 @@ def coordenacao(enc_jwt: str, response: dict = Body(...)):
 
     if contatos_db.exists():
         return ContatosPostCoordenacaoModelo(id = contatos_db.first().id, status = False)
-    id_temp = ContatosCoordenacaoDB().insert(email = response['email'], telefone = response['telefone']).execute()
+    id_temp = ContatosCoordenacaoDB().insert(email = response['email'], telefone = response['telefone'], curso_id=current_user.curso).execute()
     return ContatosPostCoordenacaoModelo(id = id_temp, status= True)

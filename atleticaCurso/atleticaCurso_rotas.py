@@ -2,11 +2,16 @@ from os import stat
 from typing import List
 from config import Settings
 from fastapi import APIRouter, Body
+
 import jwt
+from autenticacao.autenticacao import usuario_jwt
+from fastapi import APIRouter, Depends
 
 from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
 from atleticaCurso.atleticaCurso_modelos import AtleticaCursoPostModelo, AtleticaGetCursoModelo
 from usuario.usuario_db import TipoUsuarioDB
+from usuario.usuario_db import Usuario
+from autenticacao.autenticacao_db import UsuarioAuth
 
 router = APIRouter(prefix="/atletica",
                    tags=["Atletica"])
@@ -16,7 +21,7 @@ settings = Settings()
 @router.post('/atletica', response_model=AtleticaCursoPostModelo)
 def Atletica(enc_jwt:str, nome:str, email:str, instagram:str, telefone:str, curso_id:int):
     usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
-    
+
     atleticaCurso_db = AtleticaCursoDB().select().where((AtleticaCursoDB.nome == nome)&(AtleticaCursoDB.email == email))
     tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
 
@@ -29,8 +34,9 @@ def Atletica(enc_jwt:str, nome:str, email:str, instagram:str, telefone:str, curs
     return AtleticaCursoPostModelo(status=True)
 
 @router.get('/listar_atletica', response_model=List[AtleticaGetCursoModelo])
-def Atletica():
-    atleticas = AtleticaCursoDB().select()
+def Atletica(current_user: Usuario = Depends(usuario_jwt)):
+    
+    atleticas = AtleticaCursoDB().select().where((AtleticaCursoDB.curso_id == current_user.curso))
     atleticaCurso_modelo = []
     for atletica in atleticas:
         atleticaCurso_modelo.append(AtleticaGetCursoModelo(id = atletica.id, curso_id = atletica.curso_id, nome = atletica.nome, email = atletica.email, instagram = atletica.instagram, telefone = atletica.telefone))

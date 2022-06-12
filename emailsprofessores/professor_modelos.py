@@ -7,5 +7,6 @@ class ContatoPostProfessorModelo(BaseModel):
 
 class ContatoGetProfessorModelo(BaseModel):
     id: int
+    curso_id: int
     nome: str
     email: str

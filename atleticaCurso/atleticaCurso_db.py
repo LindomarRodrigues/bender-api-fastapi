@@ -12,4 +12,4 @@ class AtleticaCursoDB(Model):
 
     class Meta:
         database = db_obj
-        schema = 'atleticaCurso'
+        schema = 'atleticaCurso' 

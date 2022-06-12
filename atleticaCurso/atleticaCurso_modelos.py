@@ -1,3 +1,4 @@
+# from asyncio.windows_events import NULL
 from pydantic import BaseModel
 from typing import Optional
 
@@ -14,3 +15,9 @@ class AtleticaGetCursoModelo(BaseModel):
     email: str
     instagram: str
     telefone: str
+
+# class AtleticaPostCursoModelo(BaseModel):
+#     nome: str
+#     email: str
+#     instagram: str
+#     telefone: str
