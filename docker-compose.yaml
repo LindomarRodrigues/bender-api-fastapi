@@ -1,0 +1,17 @@
+version: '3.3'
+
+services:
+  postgresql:
+    image: "postgres"
+    shm_size: 1gb
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=$DB_SENHA
+      - POSTGRES_USER=$DB_USUARIO
+      - POSTGRES_DB=$DB_NOME
+    volumes:
+      - ./_data/postgres-data:/var/lib/postgresql/data
+      - ./_data/customPostgresql.conf:/etc/postgresql.conf
+      - ./_data/montar_schemas.sql:/docker-entrypoint-initdb.d/montar_schemas.sql

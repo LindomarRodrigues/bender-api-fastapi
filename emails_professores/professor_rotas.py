@@ -7,19 +7,19 @@ from fastapi import APIRouter, Body
 
 import jwt
 from autenticacao.autenticacao import usuario_jwt
-from usuario.usuario_db import Usuario
+from usuario.usuario_db import UsuarioDb
 from fastapi import APIRouter, Depends
 
-from emailsprofessores.professor_db import ContatoProfessorDB
-from emailsprofessores.professor_modelos import ContatoPostProfessorModelo
-from emailsprofessores.professor_modelos import ContatoGetProfessorModelo
+from emails_professores.professor_db import ContatoProfessorDB
+from emails_professores.professor_modelos import ContatoPostProfessorModelo
+from emails_professores.professor_modelos import ContatoGetProfessorModelo
 
 router = APIRouter(prefix="/professores",   
                    tags=["Professores"]) 
 settings = Settings()
 
 @router.post('/professores', response_model=ContatoPostProfessorModelo)
-def professores(payload: dict = Body(...), current_user: Usuario = Depends(usuario_jwt)):
+def professores(payload: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
     print(payload)
     # import ipdb; ipdb.set_trace()
     professor_db = ContatoProfessorDB().select().where((ContatoProfessorDB.nome == payload['nome'])&(ContatoProfessorDB.email == payload['email']))
@@ -29,7 +29,7 @@ def professores(payload: dict = Body(...), current_user: Usuario = Depends(usuar
     return ContatoPostProfessorModelo(id = id_temp, status=True)
 
 @router.get('/professores', response_model=List[ContatoGetProfessorModelo])
-def professores(current_user: Usuario = Depends(usuario_jwt)):
+def professores(current_user: UsuarioDb = Depends(usuario_jwt)):
     profs = ContatoProfessorDB().select().where((ContatoProfessorDB.curso_id == current_user.curso))
     professor_modelo = []
     for prof in profs:

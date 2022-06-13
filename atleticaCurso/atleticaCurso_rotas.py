@@ -10,8 +10,8 @@ from fastapi import APIRouter, Depends
 from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
 from atleticaCurso.atleticaCurso_modelos import AtleticaCursoPostModelo, AtleticaGetCursoModelo
 from usuario.usuario_db import TipoUsuarioDB
-from usuario.usuario_db import Usuario
-from autenticacao.autenticacao_db import UsuarioAuth
+from usuario.usuario_db import UsuarioDb
+from autenticacao.autenticacao_db import UsuarioAuthDb
 
 router = APIRouter(prefix="/atletica",
                    tags=["Atletica"])
@@ -34,7 +34,7 @@ def Atletica(enc_jwt:str, nome:str, email:str, instagram:str, telefone:str, curs
     return AtleticaCursoPostModelo(status=True)
 
 @router.get('/listar_atletica', response_model=List[AtleticaGetCursoModelo])
-def Atletica(current_user: Usuario = Depends(usuario_jwt)):
+def Atletica(current_user: UsuarioDb = Depends(usuario_jwt)):
     
     atleticas = AtleticaCursoDB().select().where((AtleticaCursoDB.curso_id == current_user.curso))
     atleticaCurso_modelo = []
