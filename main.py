@@ -8,7 +8,9 @@ from autenticacao import autenticacao_rotas
 from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
 from config import Settings
 from contatos_coordernacao import contatos_coordenacao_rotas
+from regimentoAcademico import regimento_rotas
 from contatos_coordernacao.contatos_coordenacao_db import ContatosCoordenacaoDB
+from regimentoAcademico.regimento_db import RegimentoDB
 from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
 from emails_professores import professor_rotas
 from emails_professores.professor_db import ContatoProfessorDB
@@ -18,8 +20,7 @@ from usuario import usuario_rotas
 from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb
 
 db_obj.create_tables(
-    [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb])
+    [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, RegimentoDB])
 
 settings = Settings()
 app = FastAPI()
@@ -37,6 +38,7 @@ app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
 app.include_router(contatos_coordenacao_rotas.router)
+app.include_router(regimento_rotas.router)
 
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
