@@ -27,11 +27,10 @@ def coordenacao(current_user: UsuarioDb = Depends(usuario_jwt)):
     return contatos_modelo
 
 
-@router.post('contatosCoordenacao/', response_model=ContatosPostCoordenacaoModelo)
-def coordenacao(enc_jwt: str, response: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
+@router.post('/contatosCoordenacao', response_model=ContatosPostCoordenacaoModelo)
+def coordenacao(response: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
 
-    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
 
     if tipo_usuario_db.tipo < 2:
         return ContatosPostCoordenacaoModelo(status=False, error="Usuario não autenticado")

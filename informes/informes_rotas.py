@@ -18,18 +18,16 @@ router = APIRouter(prefix="/informes",
 settings = Settings()
 
 @router.post('/informes', response_model=InformesPostModelo)
-def Atletica(enc_jwt:str, remetente:str, aviso:str, link:str, current_user: UsuarioDb = Depends(usuario_jwt)):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
-
-    informes_db = InformesDB().select().where((InformesDB.remetente == remetente)&(InformesDB.aviso == aviso))
-    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
+def Atletica(payload: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
+    informes_db = InformesDB().select().where((InformesDB.remetente == payload['remetente'])&(InformesDB.aviso == payload['aviso']))
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
 
     if tipo_usuario_db.tipo < 2:
         return InformesPostModelo(status= False, error="Usuario não autenticado")
 
     if informes_db.exists():
         return InformesPostModelo(erro="Essa atletica já foi adicionada, tente novamente!", status=False)
-    id_temp = InformesDB().insert(curso_id = current_user.curso, remetente = remetente, aviso = aviso, link = link).execute()
+    id_temp = InformesDB().insert(curso_id = current_user.curso, remetente = payload['remetente'], aviso = payload['aviso'], link = payload['link']).execute()
     return InformesPostModelo(status=True)
 
 @router.get('/listar_informes', response_model=List[InformesGetModelo])
