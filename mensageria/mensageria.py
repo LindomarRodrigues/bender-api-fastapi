@@ -35,19 +35,17 @@ def iniciar_conversa(enc_jwt: str, receptor_id: int):
 
 
 @router.post('/enviar_mensagem', response_model=MensagemEnviadaModelo)
-def enviar_mensagem(enc_jwt: str, conversa_id: int, conteudo: str):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
-
-    autor_id = usuario_payload["id"]
+def enviar_mensagem(conversa_id: int, conteudo: str, current_user: UsuarioDb = Depends(usuario_jwt)):
+    autor_id = current_user.id.id
 
     conversa = ConversaDb().select().where(ConversaDb.id == conversa_id).first()
     mensagem_id = MensagemDb.insert(conteudo=conteudo,
                                     conversa_id=conversa_id,
-                                    responsavel=1 if autor_id == conversa.autor_id else 2)
+                                    responsavel=1 if autor_id == conversa.autor_id else 2).execute()
     MensagemStatusDb.insert(mensagem_id=mensagem_id,
                             status=0,
-                            aconteceu_em=datetime.datetime.now())
-
+                            aconteceu_em=datetime.datetime.now()).execute()
+    print(mensagem_id)
     return MensagemEnviadaModelo(status=True,
                                  mensagem_id=mensagem_id)
 
@@ -63,8 +61,6 @@ def listar_conversas(current_user: UsuarioDb = Depends(usuario_jwt)):
                 .where(MensagemStatusDb.mensagem_id << conversa_db.mensagens) \
                 .order_by(MensagemStatusDb.aconteceu_em) \
                 .first()
-            import ipdb;
-            ipdb.set_trace()
             e_autor = conversa_db.autor_id.id.id == current_user.id.id
 
             conversa_modelo = ConversaModelo(id=conversa_db.id,
@@ -83,14 +79,17 @@ def listar_conversas(current_user: UsuarioDb = Depends(usuario_jwt)):
 
 
 @router.get('/listar_mensagens', response_model=List[MensagemModelo])
-def listar_mensagens(enc_jwt: str, conversa_id: int):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
-
-    mensagems_db = MensagemDb().select().where(MensagemDb.conversa_id == conversa_id)
+def listar_mensagens(conversa_id: int, current_user: UsuarioDb = Depends(usuario_jwt)):
+    mensagems_db = MensagemDb(
+    ).select() \
+        .join(MensagemStatusDb) \
+        .where(MensagemDb.conversa_id == conversa_id)
 
     mensagems = [MensagemModelo(id=mensagem_db.id,
                                 conteudo=mensagem_db.conteudo,
-                                conversa_id=mensagem_db.conversa_id,
-                                responsavel=mensagem_db.responsavel) for mensagem_db in mensagems_db]
+                                conversa_id=mensagem_db.conversa_id.id,
+                                responsavel=mensagem_db.responsavel,
 
+                                aconteceu_em=mensagem_db.status.get().aconteceu_em) for mensagem_db in mensagems_db]
+    print(mensagems)
     return mensagems
