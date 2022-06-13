@@ -8,5 +8,6 @@ class ContatosPostCoordenacaoModelo(BaseModel):
 
 class ContatosGetCoordenacaoModelo(BaseModel):
     id: int
+    curso_id: int
     email: str
     telefone: str

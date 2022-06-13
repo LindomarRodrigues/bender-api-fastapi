@@ -14,13 +14,17 @@ from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
 from emails_professores import professor_rotas
 from emails_professores.professor_db import ContatoProfessorDB
 from mensageria import mensageria
+
+from atleticaCurso import atleticaCurso_rotas
+from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
+
 from modelos import Professor, Horario, GrupoTelegram, Turma
 from usuario import usuario_rotas
 from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb
 
 db_obj.create_tables(
     [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb])
+     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB])
 
 settings = Settings()
 app = FastAPI()
@@ -39,6 +43,7 @@ app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
 app.include_router(instagram_rotas.router)
 app.include_router(contatos_coordenacao_rotas.router)
+app.include_router(atleticaCurso_rotas.router)
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):
