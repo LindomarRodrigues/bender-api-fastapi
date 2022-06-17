@@ -2,11 +2,12 @@ from pydantic import BaseModel
 from typing import Optional
 
 class AtualizarInstagram(BaseModel):
-    id: Optional[int] = None
-    erro: Optional[str] = None
+    id: Optional[int]
     status: bool
+    error: Optional[str]
 
 class InstagramModeloGet(BaseModel):
-    id: int
-    nome_do_perfil: str
-    link: str
+    id: Optional[int]
+    nome_do_perfil: Optional[str]
+    link: Optional[str]
+    error: Optional[str]

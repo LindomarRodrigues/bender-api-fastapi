@@ -5,7 +5,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from autenticacao import autenticacao_rotas
-from instagram import instagram_rotas
 from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
 from config import Settings
 from contatos_coordernacao import contatos_coordenacao_rotas
@@ -14,6 +13,9 @@ from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
 from emails_professores import professor_rotas
 from emails_professores.professor_db import ContatoProfessorDB
 from mensageria import mensageria
+
+from instagram import instagram_rotas
+from instagram.instagram_db import InstagramDB
 
 from atleticaCurso import atleticaCurso_rotas
 from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
@@ -27,7 +29,7 @@ from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb
 
 db_obj.create_tables(
     [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB])
+     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB, InstagramDB])
 
 settings = Settings()
 app = FastAPI()
