@@ -2,13 +2,13 @@ from peewee import Model, AutoField, CharField, IntegerField
 
 from db import db_obj
 
-
-class ContatoProfessorDB(Model):
+class InformesDB(Model):
     id = AutoField()
     curso_id = IntegerField()
-    nome = CharField()
-    email = CharField()
+    remetente = CharField()
+    aviso = CharField()
+    link = CharField()
 
     class Meta:
         database = db_obj
-        schema = 'professoresContatos'
+        schema = 'informes' 

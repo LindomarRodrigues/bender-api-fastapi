@@ -1,27 +1,38 @@
 from typing import List, Dict
 
+from config import Settings
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
-from autenticacao import autenticacao_rotas
-from lattesDocente import lattesDocente_rotas
-from lattesDocente.lattesDocente_db import lattesDocenteDB
-from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
-from config import Settings
-from contatos_coordernacao import contatos_coordenacao_rotas
-from contatos_coordernacao.contatos_coordenacao_db import ContatosCoordenacaoDB
-from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
-from emails_professores import professor_rotas
-from emails_professores.professor_db import ContatoProfessorDB
-from mensageria import mensageria
-from modelos import Professor, Horario, GrupoTelegram, Turma
 from usuario import usuario_rotas
+from autenticacao import autenticacao_rotas
+from instagram import instagram_rotas
+from atleticaCurso import atleticaCurso_rotas
+from informes import informes_rotas
+from contatos_coordernacao import contatos_coordenacao_rotas
+from emails_professores import professor_rotas
+from lattesDocente import lattesDocente_rotas
+
+from informes.informes_db import InformesDB
+from contatos_coordernacao.contatos_coordenacao_db import ContatosCoordenacaoDB
+from emails_professores.professor_db import ContatoProfessorDB
+from lattesDocente.lattesDocente_db import lattesDocenteDB
+from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
 from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb
+from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
+
+from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
+from mensageria import mensageria
+
+from modelos import Professor, Horario, GrupoTelegram, Turma
+
+db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, lattesDocenteDB])
+
 
 db_obj.create_tables(
-    [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, lattesDocenteDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb])
+    [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
+     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB])
 
 settings = Settings()
 app = FastAPI()
@@ -39,7 +50,11 @@ app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
 app.include_router(lattesDocente_rotas.router)
+app.include_router(instagram_rotas.router)
 app.include_router(contatos_coordenacao_rotas.router)
+app.include_router(atleticaCurso_rotas.router)
+app.include_router(informes_rotas.router)
+
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
 def buscarProfessor(ref_id: int):

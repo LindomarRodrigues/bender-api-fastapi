@@ -60,6 +60,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
     senha_hash = gerar_hash_sha256(senha)
     if senha_hash != usuario.senha_hash:
         return EntrarModelo(status=False, erro='Senha incorreta')
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario.id).first()
 
     usuario_payload = model_to_dict(usuario)
     usuario_payload['exp'] = datetime.datetime.now() + datetime.timedelta(seconds=settings.tempo_expiracao_jwt)
@@ -80,7 +81,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
     usuario.ultimo_acesso_em = datetime.datetime.now()
     usuario.save()
     print(enc_jwt)
-    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True}
+    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True, "tipo_usuario":tipo_usuario_db.tipo}
 
 
 @router.post('/atualizar_jwt', response_model=AtualizarJwtModelo)

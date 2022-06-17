@@ -6,6 +6,12 @@ from config import Settings
 import jwt
 from fastapi import APIRouter, Body
 
+import jwt
+from autenticacao.autenticacao import usuario_jwt
+from usuario.usuario_db import UsuarioDb, TipoUsuarioDB
+from fastapi import APIRouter, Depends
+
+
 from lattesDocente.lattesDocente_db import lattesDocenteDB
 from lattesDocente.lattesDocente_modelos import LattesGetDocenteModelo
 from lattesDocente.lattesDocente_modelos import LattesPostDocenteModelo
@@ -17,10 +23,9 @@ router = APIRouter(prefix="/lattesDocente",
 settings = Settings()
 
 @router.get('/lattesDocente', response_model=List[LattesGetDocenteModelo])
-def latte(enc_jwt: str):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
+def latte(current_user: UsuarioDb = Depends(usuario_jwt)):
 
-    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
     
     if tipo_usuario_db.tipo < 2:
         return[ LattesPostDocenteModelo(status= False, error="Usuario não autenticado")]
