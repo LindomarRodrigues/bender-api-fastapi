@@ -19,6 +19,12 @@ settings = Settings()
 
 @router.get('/contatosCoordenacao', response_model=List[ContatosGetCoordenacaoModelo])
 def coordenacao(current_user: UsuarioDb = Depends(usuario_jwt)):
+
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
+
+    if tipo_usuario_db.tipo != 2:
+        return [ContatosPostCoordenacaoModelo(status= False, error="Usuario não autenticado")]
+        
     contatos = ContatosCoordenacaoDB().select().where(ContatosCoordenacaoDB.curso_id == current_user.curso)
     contatos_modelo = []
     for contato in contatos:
