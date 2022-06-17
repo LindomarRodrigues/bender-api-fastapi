@@ -1,4 +1,3 @@
-from turtle import st
 from pydantic import BaseModel
 
 class ContatoPostProfessorModelo(BaseModel):
@@ -7,5 +6,6 @@ class ContatoPostProfessorModelo(BaseModel):
 
 class ContatoGetProfessorModelo(BaseModel):
     id: int
+    curso_id: int
     nome: str
     email: str
