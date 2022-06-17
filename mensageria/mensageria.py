@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends
 
 from autenticacao.autenticacao import usuario_jwt
 from config import Settings
-from mensageria.mensageria_db import Conversa, Mensagem, MensagemStatus
+from mensageria.mensageria_db import ConversaDb, MensagemDb, MensagemStatusDb
 from mensageria.mensageria_modelos import ConversaIniciadaModelo, MensagemEnviadaModelo, ConversaModelo, MensagemModelo
-from usuario.usuario_db import Usuario
+from usuario.usuario_db import UsuarioDb
 
 router = APIRouter(prefix="/mensageria",
                    tags=["Mensageria"])
@@ -21,49 +21,46 @@ def iniciar_conversa(enc_jwt: str, receptor_id: int):
 
     autor_id = usuario_payload["id"]
 
-    conversa = Conversa().select() \
-        .where(Conversa.autor_id == autor_id & Conversa.receptor_id == receptor_id)
+    conversa = ConversaDb().select() \
+        .where(ConversaDb.autor_id == autor_id & ConversaDb.receptor_id == receptor_id)
     if conversa.exists():
         return ConversaIniciadaModelo(status=False,
                                       erro='Conversa já existe')
     else:
-        conversa_id = Conversa.insert(autor_id=autor_id,
-                                      receptor_id=receptor_id).execute()
+        conversa_id = ConversaDb.insert(autor_id=autor_id,
+                                        receptor_id=receptor_id).execute()
 
         return ConversaIniciadaModelo(status=True,
                                       conversa_id=conversa_id)
 
 
 @router.post('/enviar_mensagem', response_model=MensagemEnviadaModelo)
-def enviar_mensagem(enc_jwt: str, conversa_id: int, conteudo: str):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
+def enviar_mensagem(conversa_id: int, conteudo: str, current_user: UsuarioDb = Depends(usuario_jwt)):
+    autor_id = current_user.id.id
 
-    autor_id = usuario_payload["id"]
-
-    conversa = Conversa().select().where(Conversa.id == conversa_id).first()
-    mensagem_id = Mensagem.insert(conteudo=conteudo,
-                                  conversa_id=conversa_id,
-                                  responsavel=1 if autor_id == conversa.autor_id else 2)
-    MensagemStatus.insert(mensagem_id=mensagem_id,
-                          status=0,
-                          aconteceu_em=datetime.datetime.now())
-
+    conversa = ConversaDb().select().where(ConversaDb.id == conversa_id).first()
+    mensagem_id = MensagemDb.insert(conteudo=conteudo,
+                                    conversa_id=conversa_id,
+                                    responsavel=1 if autor_id == conversa.autor_id else 2).execute()
+    MensagemStatusDb.insert(mensagem_id=mensagem_id,
+                            status=0,
+                            aconteceu_em=datetime.datetime.now()).execute()
+    print(mensagem_id)
     return MensagemEnviadaModelo(status=True,
                                  mensagem_id=mensagem_id)
 
 
 @router.get('/listar_conversas', response_model=List[ConversaModelo])
-def listar_conversas(current_user: Usuario = Depends(usuario_jwt)):
+def listar_conversas(current_user: UsuarioDb = Depends(usuario_jwt)):
     inicio = datetime.datetime.now()
     conversas = []
     for conversas_db in [current_user.conversas_iniciadas, current_user.conversas_convidadas]:
         for conversa_db in [*conversas_db]:
-            ultima_mensagem_status = MensagemStatus() \
+            ultima_mensagem_status = MensagemStatusDb() \
                 .select() \
-                .where(MensagemStatus.mensagem_id << conversa_db.mensagens) \
-                .order_by(MensagemStatus.aconteceu_em) \
+                .where(MensagemStatusDb.mensagem_id << conversa_db.mensagens) \
+                .order_by(MensagemStatusDb.aconteceu_em) \
                 .first()
-            import ipdb; ipdb.set_trace()
             e_autor = conversa_db.autor_id.id.id == current_user.id.id
 
             conversa_modelo = ConversaModelo(id=conversa_db.id,
@@ -82,14 +79,17 @@ def listar_conversas(current_user: Usuario = Depends(usuario_jwt)):
 
 
 @router.get('/listar_mensagens', response_model=List[MensagemModelo])
-def listar_mensagens(enc_jwt: str, conversa_id: int):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
-
-    mensagems_db = Mensagem().select().where(Mensagem.conversa_id == conversa_id)
+def listar_mensagens(conversa_id: int, current_user: UsuarioDb = Depends(usuario_jwt)):
+    mensagems_db = MensagemDb(
+    ).select() \
+        .join(MensagemStatusDb) \
+        .where(MensagemDb.conversa_id == conversa_id)
 
     mensagems = [MensagemModelo(id=mensagem_db.id,
                                 conteudo=mensagem_db.conteudo,
-                                conversa_id=mensagem_db.conversa_id,
-                                responsavel=mensagem_db.responsavel) for mensagem_db in mensagems_db]
+                                conversa_id=mensagem_db.conversa_id.id,
+                                responsavel=mensagem_db.responsavel,
 
+                                aconteceu_em=mensagem_db.status.get().aconteceu_em) for mensagem_db in mensagems_db]
+    print(mensagems)
     return mensagems

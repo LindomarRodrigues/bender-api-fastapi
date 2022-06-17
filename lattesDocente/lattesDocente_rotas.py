@@ -5,6 +5,11 @@ from typing import List
 from config import Settings
 from fastapi import APIRouter, Body
 
+import jwt
+from autenticacao.autenticacao import usuario_jwt
+from usuario.usuario_db import UsuarioDb, TipoUsuarioDB
+from fastapi import APIRouter, Depends
+
 from lattesDocente.lattesDocente_db import lattesDocenteDB
 from lattesDocente.lattesDocente_modelos import LattesGetDocenteModelo
 from lattesDocente.lattesDocente_modelos import LattesPostDocenteModelo
@@ -14,7 +19,12 @@ router = APIRouter(prefix="/lattesDocente",
 settings = Settings()
 
 @router.post('/lattesDocente', response_model=LattesPostDocenteModelo)
-def latte(response: dict = Body(...)):
+def latte(response: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
+
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
+    
+    if tipo_usuario_db.tipo != 2:
+        return LattesPostDocenteModelo(status= False, error="Usuario não autenticado")
     lattes_db = lattesDocenteDB().select().where((lattesDocenteDB.nome == response['nome'])&(lattesDocenteDB.lattes == response['lattes']))
 
     if lattes_db.exists():
