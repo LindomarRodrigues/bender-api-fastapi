@@ -13,7 +13,7 @@ from informes import informes_rotas
 from contatos_coordernacao import contatos_coordenacao_rotas
 from emails_professores import professor_rotas
 from lattesDocente import lattesDocente_rotas
-
+from instagram.instagram_db import InstagramDB
 from informes.informes_db import InformesDB
 from contatos_coordernacao.contatos_coordenacao_db import ContatosCoordenacaoDB
 from emails_professores.professor_db import ContatoProfessorDB
@@ -32,7 +32,7 @@ db_obj.create_tables([TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, la
 
 db_obj.create_tables(
     [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB])
+     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB, InstagramDB])
 
 settings = Settings()
 app = FastAPI()

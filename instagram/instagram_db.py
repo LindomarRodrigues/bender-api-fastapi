@@ -1,7 +1,7 @@
 from peewee import Model, AutoField, CharField
 from db import db_obj
 
-class Instagram(Model):
+class InstagramDB(Model):
     id = AutoField()
     nome_do_perfil = CharField()
     link = CharField()
