@@ -11,3 +11,4 @@ class LattesGetDocenteModelo(BaseModel):
     nome: Optional[str]
     lattes: Optional[str]
     error: Optional[str]
+
