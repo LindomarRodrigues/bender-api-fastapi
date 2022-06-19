@@ -2,7 +2,6 @@ from typing import List
 
 import jwt
 from fastapi import APIRouter, Body
-from urllib3 import Retry
 from config import Settings
 
 import jwt
