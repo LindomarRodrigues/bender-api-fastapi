@@ -4,30 +4,51 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
-from autenticacao import autenticacao_rotas
-from instagram import instagram_rotas
-from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
 from config import Settings
+
+from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
+from modelos import Professor, Horario, GrupoTelegram, Turma
+
+#Autenticação
+from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
+from autenticacao import autenticacao_rotas
+
+#Contatos Coordernação
 from contatos_coordernacao import contatos_coordenacao_rotas
 from contatos_coordernacao.contatos_coordenacao_db import ContatosCoordenacaoDB
-from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
+
+
+#Emails dos Professores
 from emails_professores import professor_rotas
 from emails_professores.professor_db import ContatoProfessorDB
+
+#Instagram
+from instagram import instagram_rotas
+from instagram.instagram_db import Instagram
+
+#Mensageria
 from mensageria import mensageria
 
+#Atletica do Curso
 from atleticaCurso import atleticaCurso_rotas
 from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
 
+#Informes
 from informes import informes_rotas
 from informes.informes_db import InformesDB
 
-from modelos import Professor, Horario, GrupoTelegram, Turma
+#Usuario
 from usuario import usuario_rotas
-from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb
+from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb, ImagemPerfilDB, PdfTestDB
 
+#Informações do Curso
+from informacoes_curso import informacoes_curso_rotas
+from informacoes_curso.informacoes_curso_db import InformacoesCursoDB
+
+#Crianção das tabelas
 db_obj.create_tables(
     [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB])
+     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB, ImagemPerfilDB, PdfTestDB,Instagram,InformacoesCursoDB])
 
 settings = Settings()
 app = FastAPI()
@@ -39,8 +60,9 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
-app.include_router(autenticacao_rotas.router)
 
+app.include_router(autenticacao_rotas.router)
+app.include_router(informacoes_curso_rotas.router)
 app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
