@@ -1,9 +1,16 @@
 from typing import List
 
 import jwt
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
+from urllib3 import Retry
 from config import Settings
-from instagram.instagram_db import Instagram
+
+import jwt
+from autenticacao.autenticacao import usuario_jwt
+from usuario.usuario_db import UsuarioDb, TipoUsuarioDB
+from fastapi import APIRouter, Depends
+
+from instagram.instagram_db import InstagramDB
 from instagram.instagram_modelos import AtualizarInstagram, InstagramModeloGet
 from usuario.usuario_db import TipoUsuarioDB
 
@@ -13,21 +20,32 @@ settings = Settings()
 
 
 @router.post('/adicionar_instagram', response_model = AtualizarInstagram)
-def adicionar_instagram( enc_jwt: str, nome_do_perfil: str, link: str):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
-    usuario = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
-    if usuario.tipo != 2:
+def adicionar_instagram(response: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
+    
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
+
+    if tipo_usuario_db.tipo != 2:
         return AtualizarInstagram(erro = 'Usuario não autenticado', status=False)
-    instagram_db = Instagram().select().where((Instagram.link  == link))
+    instagram_db = InstagramDB().select().where((
+        InstagramDB.nome_do_perfil  == response['nome_do_perfil'])&
+        (InstagramDB.link == response['link']))
     if instagram_db.exists():
-        return AtualizarInstagram(erro = "Esta conta já foi adicionada", status=False)
-    id_instagram = Instagram.insert(nome_do_perfil = nome_do_perfil, link = link).execute()
+        return AtualizarInstagram(error = "Esta conta já foi adicionada", status=False)
+    id_instagram = InstagramDB.insert(nome_do_perfil = response['nome_do_perfil'], link = response['link']).execute()
     return AtualizarInstagram(id=id_instagram, status=True)
 
 @router.get('/listar_instagrams', response_model=List[InstagramModeloGet])
-def listar_instagrams():
+def listar_instagrams(current_user: UsuarioDb = Depends(usuario_jwt)):
+
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
+    if tipo_usuario_db.tipo != 2:
+        return [AtualizarInstagram(status= False, error="Usuario não autenticado")]
+
+    instagrams = InstagramDB().select()
     list_instagram = []
-    instagrams = Instagram().select()
     for instagram in instagrams:
-       list_instagram.append(InstagramModeloGet(id= instagram.id, nome_do_perfil= instagram.nome_do_perfil, link= instagram.link))
+       list_instagram.append(InstagramModeloGet(
+        id= instagram.id, 
+        nome_do_perfil= instagram.nome_do_perfil,
+        link= instagram.link))
     return list_instagram

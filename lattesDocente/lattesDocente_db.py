@@ -1,11 +1,12 @@
 from peewee import Model, AutoField, CharField
+
 from db import db_obj
 
-class InstagramDB(Model):
+class lattesDocenteDB(Model):
     id = AutoField()
-    nome_do_perfil = CharField()
-    link = CharField()
+    nome = CharField()
+    lattes = CharField()
 
     class Meta:
         database = db_obj
-        schema = 'instagram'
+        schema = 'lattesDocente'

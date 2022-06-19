@@ -1,4 +1,5 @@
 # from asyncio.windows_events import NULL
+from turtle import st
 from pydantic import BaseModel
 from typing import Optional
 
@@ -9,12 +10,13 @@ class AtleticaCursoPostModelo(BaseModel):
     
 
 class AtleticaGetCursoModelo(BaseModel):
-    id: int
-    curso_id: int
-    nome: str
-    email: str
-    instagram: str
-    telefone: str
+    id: Optional[int]
+    curso_id: Optional[int]
+    nome: Optional[str]
+    email: Optional[str]
+    instagram: Optional[str]
+    telefone: Optional[str]
+    error: Optional[str]
 
 # class AtleticaPostCursoModelo(BaseModel):
 #     nome: str

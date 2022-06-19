@@ -5,6 +5,7 @@ from fastapi import APIRouter, Body
 
 import jwt
 from autenticacao.autenticacao import usuario_jwt
+from usuario.usuario_db import UsuarioDb, TipoUsuarioDB
 from fastapi import APIRouter, Depends
 
 from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
@@ -19,25 +20,38 @@ settings = Settings()
 
 # JWT do usuario (colocar)
 @router.post('/atletica', response_model=AtleticaCursoPostModelo)
-def Atletica(enc_jwt:str, nome:str, email:str, instagram:str, telefone:str, curso_id:int):
-    usuario_payload = jwt.decode(enc_jwt, key=settings.jwt_secret, algorithms=["HS256"])
+def Atletica(response: dict = Body(...), current_user: UsuarioDb = Depends(usuario_jwt)):
 
-    atleticaCurso_db = AtleticaCursoDB().select().where((AtleticaCursoDB.nome == nome)&(AtleticaCursoDB.email == email))
-    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario_payload['id']).first()
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
 
-    if tipo_usuario_db.tipo < 2:
+    if tipo_usuario_db.tipo != 2:
         return AtleticaCursoPostModelo(status= False, error="Usuario não autenticado")
-
-    if atleticaCurso_db.exists():
+    atletica_db = AtleticaCursoDB().select().where(
+        (AtleticaCursoDB.nome == response['nome'])&
+        (AtleticaCursoDB.email == response['email'])&
+        (AtleticaCursoDB.instagram == response['instagram'])&
+        (AtleticaCursoDB.telefone == response['telefone']))
+    if atletica_db.exists():
         return AtleticaCursoPostModelo(erro="Essa atletica já foi adicionada, tente novamente!", status=False)
-    id_temp = AtleticaCursoDB().insert(curso_id = curso_id, nome = nome, email = email, instagram = instagram, telefone = telefone).execute()
-    return AtleticaCursoPostModelo(status=True)
+    id_temp = AtleticaCursoDB().insert(curso_id = response['curso_id'], nome = response['nome'], email = response['email'], instagram = response['instagram'], telefone = response['telefone']).execute()
+    return AtleticaCursoPostModelo(id = id_temp, status = True)
 
 @router.get('/listar_atletica', response_model=List[AtleticaGetCursoModelo])
 def Atletica(current_user: UsuarioDb = Depends(usuario_jwt)):
-    
-    atleticas = AtleticaCursoDB().select().where((AtleticaCursoDB.curso_id == current_user.curso))
+
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == current_user.id).first()
+
+    if tipo_usuario_db.tipo != 2:
+        return [AtleticaCursoPostModelo(status= False, error="Usuario não autenticado")]
+        
+    atleticas = AtleticaCursoDB().select().where()
     atleticaCurso_modelo = []
     for atletica in atleticas:
-        atleticaCurso_modelo.append(AtleticaGetCursoModelo(id = atletica.id, curso_id = atletica.curso_id, nome = atletica.nome, email = atletica.email, instagram = atletica.instagram, telefone = atletica.telefone))
+        atleticaCurso_modelo.append(AtleticaGetCursoModelo(
+            id = atletica.id, 
+            curso_id = atletica.curso_id,
+            nome = atletica.nome, 
+            email = atletica.email, 
+            instagram = atletica.instagram, 
+            telefone = atletica.telefone))
     return atleticaCurso_modelo
