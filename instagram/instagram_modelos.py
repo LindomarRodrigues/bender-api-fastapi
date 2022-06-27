@@ -1,10 +1,13 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 class AtualizarInstagram(BaseModel):
     id: Optional[int]
     status: bool
     error: Optional[str]
+
 
 class InstagramModeloGet(BaseModel):
     id: Optional[int]

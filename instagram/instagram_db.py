@@ -1,5 +1,7 @@
 from peewee import Model, AutoField, CharField
+
 from db import db_obj
+
 
 class InstagramDB(Model):
     id = AutoField()

@@ -2,6 +2,7 @@ from peewee import Model, AutoField, CharField, IntegerField
 
 from db import db_obj
 
+
 class InformesDB(Model):
     id = AutoField()
     curso_id = IntegerField()
@@ -11,4 +12,4 @@ class InformesDB(Model):
 
     class Meta:
         database = db_obj
-        schema = 'informes' 
+        schema = 'informes'

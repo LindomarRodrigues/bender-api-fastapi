@@ -81,7 +81,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
     usuario.ultimo_acesso_em = datetime.datetime.now()
     usuario.save()
     print(enc_jwt)
-    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True, "tipo_usuario":tipo_usuario_db.tipo}
+    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True, "tipo_usuario": tipo_usuario_db.tipo}
 
 
 @router.post('/atualizar_jwt', response_model=AtualizarJwtModelo)

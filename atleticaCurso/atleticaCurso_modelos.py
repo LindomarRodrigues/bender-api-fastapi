@@ -1,13 +1,13 @@
-# from asyncio.windows_events import NULL
-from turtle import st
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 class AtleticaCursoPostModelo(BaseModel):
     id: Optional[int]
     error: Optional[str]
     status: bool
-    
+
 
 class AtleticaGetCursoModelo(BaseModel):
     id: Optional[int]
