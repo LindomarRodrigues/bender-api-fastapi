@@ -59,7 +59,7 @@ def listar_conversas(current_user: UsuarioDb = Depends(usuario_jwt)):
             ultima_mensagem_status = MensagemStatusDb() \
                 .select() \
                 .where(MensagemStatusDb.mensagem_id << conversa_db.mensagens) \
-                .order_by(MensagemStatusDb.aconteceu_em) \
+                .order_by(MensagemStatusDb.aconteceu_em.desc()) \
                 .first()
             e_autor = conversa_db.autor_id.id.id == current_user.id.id
 

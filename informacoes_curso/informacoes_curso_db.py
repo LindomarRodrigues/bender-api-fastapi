@@ -1,4 +1,3 @@
-
 from peewee import Model, CharField, AutoField, BlobField
 
 from db import db_obj

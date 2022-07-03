@@ -2,6 +2,7 @@ from peewee import Model, AutoField, CharField, IntegerField
 
 from db import db_obj
 
+
 class ContatosCoordenacaoDB(Model):
     id = AutoField()
     curso_id = IntegerField()
