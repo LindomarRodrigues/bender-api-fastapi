@@ -37,11 +37,11 @@ def iniciar_conversa(enc_jwt: str, receptor_id: int):
 @router.post('/enviar_mensagem', response_model=MensagemEnviadaModelo)
 def enviar_mensagem(conversa_id: int, conteudo: str, current_user: UsuarioDb = Depends(usuario_jwt)):
     autor_id = current_user.id.id
-
     conversa = ConversaDb().select().where(ConversaDb.id == conversa_id).first()
+
     mensagem_id = MensagemDb.insert(conteudo=conteudo,
                                     conversa_id=conversa_id,
-                                    responsavel=1 if autor_id == conversa.autor_id else 2).execute()
+                                    responsavel=1 if autor_id == conversa.autor_id.id.id else 2).execute()
     MensagemStatusDb.insert(mensagem_id=mensagem_id,
                             status=0,
                             aconteceu_em=datetime.datetime.now()).execute()
