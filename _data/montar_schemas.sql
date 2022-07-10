@@ -5,3 +5,8 @@ create schema dados_estaticos;
 create schema autenticacao;
 create schema professoresContatos;
 create schema contatosCoordenacao;
+create schema informacoesCurso;
+create schema lattesDocente;
+create schema atleticaCurso;
+create schema informes;
+create schema instagram;

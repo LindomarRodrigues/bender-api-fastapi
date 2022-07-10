@@ -1,10 +1,10 @@
 import datetime
 
 import jwt
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from playhouse.shortcuts import model_to_dict
-
+from random import randint 
 from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
 from autenticacao.autenticacao_modelos import CadastroModelo, EntrarModelo, AtualizarJwtModelo
 from config import Settings
@@ -17,31 +17,33 @@ settings = Settings()
 
 
 @router.post('/cadastrar', status_code=status.HTTP_201_CREATED, response_model=CadastroModelo)
-def cadastrar(nome: str, email: str, senha: str, tipo_usuario: int = 1):
-    if len(nome) == 0:
+def cadastrar(form: dict = Body(...), tipo_usuario: int = 1):
+    if len(form['nome']) == 0:
         return CadastroModelo(status=False, erro='Nome inválido')
-    elif len(senha) < 8:
+    elif len(form['senha']) < 8:
         return CadastroModelo(status=False, erro='Senha muito curta')
-    elif verificar_email(email) is False:
+    elif verificar_email(form['email']) is False:
         return CadastroModelo(status=False, erro='Email inválido')
     else:
-        usuario = UsuarioAuthDb().select().where(UsuarioAuthDb.email == email)
+        usuario = UsuarioAuthDb().select().where(UsuarioAuthDb.email == form['email'])
         if usuario.exists():
             return CadastroModelo(status=False, erro='Email já cadastrado')
 
-        usuario = UsuarioAuthDb().select().where(UsuarioAuthDb.nome == nome)
+        usuario = UsuarioAuthDb().select().where(UsuarioAuthDb.nome == form['nome'])
         if usuario.exists():
             return CadastroModelo(status=False, erro='Nome já cadastrado')
 
-    senha_hash = gerar_hash_sha256(senha)
+    senha_hash = gerar_hash_sha256(form['senha'])
 
-    usuario_auth = UsuarioAuthDb(nome=nome,
-                                 email=email,
+    usuario_auth = UsuarioAuthDb(nome=form['nome'],
+                                 email=form['email'],
                                  registrado_em=datetime.datetime.now(),
                                  ultimo_acesso_em=datetime.datetime.now(),
                                  senha_hash=senha_hash)
     usuario_auth.save()
-    UsuarioDb.insert(id=usuario_auth.id, cor='#fff').execute()
+
+    cor = f"rgb({randint(1,255)},{randint(1,255)},{randint(1,255)})"
+    UsuarioDb.insert(id=usuario_auth.id, cor=cor, campus = form['campus'],instituicao = form["instituicao"], curso = form["curso"]).execute()
 
     TipoUsuarioDB.insert(usuario_id=usuario_auth.id, tipo=tipo_usuario).execute()
 
@@ -60,6 +62,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
     senha_hash = gerar_hash_sha256(senha)
     if senha_hash != usuario.senha_hash:
         return EntrarModelo(status=False, erro='Senha incorreta')
+    tipo_usuario_db = TipoUsuarioDB().select().where(TipoUsuarioDB.usuario_id == usuario.id).first()
 
     usuario_payload = model_to_dict(usuario)
     usuario_payload['exp'] = datetime.datetime.now() + datetime.timedelta(seconds=settings.tempo_expiracao_jwt)
@@ -80,7 +83,7 @@ def entrar(form_data: OAuth2PasswordRequestForm = Depends()):
     usuario.ultimo_acesso_em = datetime.datetime.now()
     usuario.save()
     print(enc_jwt)
-    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True}
+    return {"access_token": enc_jwt, "token_type": "bearer", 'status': True, "tipo_usuario": tipo_usuario_db.tipo}
 
 
 @router.post('/atualizar_jwt', response_model=AtualizarJwtModelo)

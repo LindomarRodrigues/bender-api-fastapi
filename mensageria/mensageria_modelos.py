@@ -34,3 +34,4 @@ class MensagemModelo(BaseModel):
     conteudo: str
     conversa_id: int
     responsavel: int
+    aconteceu_em: datetime.datetime

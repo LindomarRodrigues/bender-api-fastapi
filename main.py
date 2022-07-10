@@ -4,22 +4,44 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
+# Atletica do Curso
+from atleticaCurso import atleticaCurso_rotas
+from atleticaCurso.atleticaCurso_db import AtleticaCursoDB
 from autenticacao import autenticacao_rotas
+# Autenticação
 from autenticacao.autenticacao_db import UsuarioAuthDb, JwtRefreshTokenDb
 from config import Settings
+# Contatos Coordernação
 from contatos_coordernacao import contatos_coordenacao_rotas
 from contatos_coordernacao.contatos_coordenacao_db import ContatosCoordenacaoDB
 from db import DisciplinaDb, ProfessorDb, TurmaDb, db_obj
+# Emails dos Professores
 from emails_professores import professor_rotas
 from emails_professores.professor_db import ContatoProfessorDB
+# Informações do Curso
+from informacoes_curso import informacoes_curso_rotas
+from informacoes_curso.informacoes_curso_db import InformacoesCursoDB
+# Informes
+from informes import informes_rotas
+from informes.informes_db import InformesDB
+# Instagram
+from instagram import instagram_rotas
+from instagram.instagram_db import InstagramDB
+# Lattes Docentes
+from lattesDocente import lattesDocente_rotas
+from lattesDocente.lattesDocente_db import lattesDocenteDB
+# Mensageria
 from mensageria import mensageria
 from modelos import Professor, Horario, GrupoTelegram, Turma
+# Usuario
 from usuario import usuario_rotas
 from usuario.usuario_db import TipoUsuarioDB, TurmasUsuarioDb, UsuarioDb
 
+# Criação das tabelas
 db_obj.create_tables(
     [TurmaDb, DisciplinaDb, ProfessorDb, ContatoProfessorDB, ContatosCoordenacaoDB, TipoUsuarioDB, TurmasUsuarioDb,
-     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb])
+     UsuarioDb, UsuarioAuthDb, JwtRefreshTokenDb, AtleticaCursoDB, InformesDB, InstagramDB, InformacoesCursoDB,
+     lattesDocenteDB])
 
 settings = Settings()
 app = FastAPI()
@@ -32,11 +54,15 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"])
 
 app.include_router(autenticacao_rotas.router)
-
+app.include_router(informacoes_curso_rotas.router)
 app.include_router(mensageria.router)
 app.include_router(usuario_rotas.router)
 app.include_router(professor_rotas.router)
+app.include_router(lattesDocente_rotas.router)
+app.include_router(instagram_rotas.router)
 app.include_router(contatos_coordenacao_rotas.router)
+app.include_router(atleticaCurso_rotas.router)
+app.include_router(informes_rotas.router)
 
 
 @app.get('/buscar_professor/{ref_id}', response_model=Professor)
